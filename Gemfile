@@ -66,3 +66,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+  # required extra gems!!!
+gem 'devise'
+gem 'cancancan'
+gem 'stripe' # For payments
+gem 'rqrcode' # For generating ticket QR codes

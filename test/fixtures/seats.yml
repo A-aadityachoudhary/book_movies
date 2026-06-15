@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  screen: one
+  row_name: MyString
+  seat_number: 1
+
+two:
+  screen: two
+  row_name: MyString
+  seat_number: 1

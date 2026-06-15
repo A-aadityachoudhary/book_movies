@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  movie: one
+  screen: one
+  start_time: 2026-06-15 12:47:30
+  price: 9.99
+
+two:
+  movie: two
+  screen: two
+  start_time: 2026-06-15 12:47:30
+  price: 9.99

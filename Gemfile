@@ -72,3 +72,5 @@ gem 'devise'
 gem 'cancancan'
 gem 'stripe' # For payments
 gem 'rqrcode' # For generating ticket QR codes
+
+gem "tailwindcss-rails", "~> 4.4"

@@ -1,0 +1,53 @@
+<div class="container mx-auto px-4 py-12 max-w-md">
+  <div class="bg-white border border-gray-200 rounded-3xl shadow-xl overflow-hidden">
+    
+    <div class="bg-indigo-600 px-6 py-8 text-center text-white relative">
+      <div class="w-8 h-8 bg-gray-100 rounded-full absolute -bottom-4 -left-4"></div>
+      <div class="w-8 h-8 bg-gray-100 rounded-full absolute -bottom-4 -right-4"></div>
+      
+      <p class="text-xs uppercase tracking-widest text-indigo-200 font-bold mb-1">Booking Confirmed</p>
+      <h1 class="text-2xl font-black"><%= @booking.showtime.movie.title %></h1>
+    </div>
+
+    <div class="p-6 border-b border-dashed border-gray-200 relative">
+      <div class="space-y-4">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-400 font-medium">Date & Time</span>
+          <span class="text-gray-900 font-semibold"><%= @booking.showtime.start_time.strftime("%b %d, %Y at %I:%M %p") %></span>
+        </div>
+        
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-400 font-medium">Theater Screen</span>
+          <span class="text-gray-900 font-semibold">Screen <%= @booking.showtime.screen.screen_number %></span>
+        </div>
+
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-400 font-medium">Seats Selected</span>
+          <span class="text-indigo-600 font-bold">
+            <% @tickets.each_with_index do |ticket, index| %>
+              <%= ticket.showtime_seat.seat.row_name %><%= ticket.showtime_seat.seat.seat_number %><%= ',' if index < @tickets.size - 1 %>
+            <% end %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-50 flex justify-between items-center">
+      <div>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Price</p>
+        <p class="text-2xl font-black text-gray-900"><%= number_to_currency(@booking.total_price) %></p>
+      </div>
+      
+      <div>
+        <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+          <%= @booking.status.capitalize %>
+        </span>
+      </div>
+    </div>
+    
+    <div class="p-6 bg-white text-center">
+      <%= link_to "Back to Home", root_path, class: "block w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition shadow" %>
+    </div>
+
+  </div>
+</div>

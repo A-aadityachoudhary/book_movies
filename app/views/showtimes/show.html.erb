@@ -1,0 +1,40 @@
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="mb-8 text-center">
+    <h1 class="text-3xl font-black text-gray-900 mb-2"><%= @showtime.movie.title %></h1>
+    <p class="text-gray-600 font-medium">
+      <%= @showtime.start_time.strftime("%B %d, %Y at %I:%M %p") %> — Screen <%= @showtime.screen.screen_number %>
+    </p>
+  </div>
+
+  <div class="w-full h-3 bg-gray-300 rounded-b-xl shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-12 relative">
+    <span class="absolute top-4 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-widest text-gray-400">Cinema Screen This Way</span>
+  </div>
+
+  <%= form_with url: bookings_path(showtime_id: @showtime.id), method: :post, local: true do |f| %>
+    
+    <div class="grid grid-cols-10 gap-3 max-w-2xl mx-auto p-6 bg-gray-50 rounded-2xl border border-gray-100 mb-8">
+      <% @showtime_seats.each do |showtime_seat| %>
+        <label class="relative block group">
+          <input type="checkbox" name="seat_ids[]" value="<%= showtime_seat.id %>" 
+                 <%= "disabled" unless showtime_seat.available? %> 
+                 class="sr-only peer">
+          
+          <div class="w-10 h-10 border rounded-lg flex items-center justify-center font-bold text-xs shadow-sm transition-all select-none duration-150
+            <%= showtime_seat.available? ? 'bg-white border-gray-300 text-gray-700 cursor-pointer hover:border-indigo-500 peer-checked:bg-indigo-600 peer-checked:border-indigo-600 peer-checked:text-white peer-checked:scale-95' : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed' %>">
+            <%= showtime_seat.seat.row_name %><%= showtime_seat.seat.seat_number %>
+          </div>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="flex justify-center space-x-6 mb-8 text-sm font-medium text-gray-600">
+      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-white border border-gray-300 rounded"></div> <span>Available</span></div>
+      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-indigo-600 rounded"></div> <span>Selected</span></div>
+      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-gray-200 rounded"></div> <span>Sold Out</span></div>
+    </div>
+
+    <div class="text-center">
+      <%= f.submit "Proceed to Reserve Seats", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition active:scale-98 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

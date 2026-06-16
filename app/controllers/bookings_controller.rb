@@ -5,6 +5,17 @@ class BookingsController < ApplicationController
   # CanCanCan automatically checks if this user is allowed to make a booking
   load_and_authorize_resource
 
+  # URL: GET /bookings
+  def index
+    if current_user.admin?
+      # Admins see everything, sorted by newest first, including user emails and movie titles
+      @bookings = Booking.includes(:user, showtime: :movie).order(created_at: :desc)
+    else
+      # Customers only see their own bookings
+      @bookings = current_user.bookings.includes(showtime: :movie).order(created_at: :desc)
+    end
+  end
+
   # URL: POST /bookings
   def create
     @showtime = Showtime.find(params[:showtime_id])

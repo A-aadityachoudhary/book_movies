@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   
   # Standard routes for Showtimes and Bookings
   resources :showtimes, only: [:index, :show, :new, :create]
-  resources :bookings, only: [:create, :show]
+  resources :bookings, only: [:create, :show, :index]
 
   # The home page of your website will show the list of showtimes
   root "showtimes#index"

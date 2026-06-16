@@ -58,5 +58,19 @@ class BookingsController < ApplicationController
   def show
     # CanCanCan automatically loads the booking for us into @booking
     @tickets = @booking.tickets.includes(showtime_seat: :seat)
+    # Create a unique data string for the ticket checker
+    qr_data = "BOOKING-ID:#{@booking.id}|USER:#{@booking.user_id}|SHOWTIME:#{@booking.showtime_id}"
+    
+    # Initialize the RQRCode engine
+    qrcode = RQRCode::QRCode.new(qr_data)
+    
+    # Render the matrix structure into a clean, lightweight SVG string
+    @qr_code_svg = qrcode.as_svg(
+      color: "000",
+      shape_rendering: "crispEdges",
+      module_size: 4,
+      standalone: true,
+      use_path: true
+    )
   end
 end

@@ -32,6 +32,15 @@
       </div>
     </div>
 
+    <div class="p-6 bg-white flex flex-col items-center justify-center border-b border-dashed border-gray-200">
+      <div class="p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-3 shadow-inner">
+        <div class="w-36 h-36 flex items-center justify-center">
+          <%= @qr_code_svg.html_safe %>
+        </div>
+      </div>
+      <p class="text-xs font-mono text-gray-400 tracking-widest">SCAN AT GATE • TICKET #<%= @booking.id %><%= @booking.user_id %></p>
+    </div>
+
     <div class="p-6 bg-gray-50 flex justify-between items-center">
       <div>
         <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Price</p>

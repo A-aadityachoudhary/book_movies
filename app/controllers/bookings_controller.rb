@@ -1,26 +1,21 @@
 class BookingsController < ApplicationController
-  # Make sure the customer is logged in before they can buy a ticket
+  # Ensure user authentication before parsing resource objects
   before_action :authenticate_user!
   
-  # CanCanCan automatically checks if this user is allowed to make a booking
+  # CanCanCan hooks into ability.rb to automate loading, scoping, and authorization
   load_and_authorize_resource
 
   # URL: GET /bookings
   def index
-    if current_user.admin?
-      # Admins see everything, sorted by newest first, including user emails and movie titles
-      @bookings = Booking.includes(:user, showtime: :movie).order(created_at: :desc)
-    else
-      # Customers only see their own bookings
-      @bookings = current_user.bookings.includes(showtime: :movie).order(created_at: :desc)
-    end
+    # REFACTOR: Removed manual current_user.admin? checking branches.
+    # CanCanCan's @bookings variable is already automatically scoped:
+    # Admins see all rows, while Customers only see their own rows.
+    @bookings = @bookings.includes(:user, showtime: :movie).order(created_at: :desc)
   end
 
   # URL: POST /bookings
   def create
     @showtime = Showtime.find(params[:showtime_id])
-    
-    # params[:seat_ids] is an array of IDs (e.g., [12, 13, 14])
     selected_seat_ids = params[:seat_ids] 
 
     if selected_seat_ids.blank?
@@ -28,38 +23,45 @@ class BookingsController < ApplicationController
       return
     end
 
-    # A Transaction ensures that everything inside this block either succeeds together, 
-    # or fails completely if even one part goes wrong.
+    # Track validation status outside of the transaction scope block wrapper
+    booking_successful = false
+
+    # Database Row-Level Locking Sequence
     ActiveRecord::Base.transaction do
-      
-      # 1. Fetch the seats and lock them in the database so no other user can modify them right now
+      # 1. Fetch seats and lock them to prevent race conditions
       seats = ShowtimeSeat.where(id: selected_seat_ids).lock("FOR UPDATE")
 
-      # 2. Safety Check: Ensure EVERY single seat chosen is actually still 'available'
+      # 2. Safety Check: Verify availability status
       if seats.all?(&:available?)
         
-        # 3. Create the parent Booking record
-        @booking = current_user.bookings.create!(
-          showtime: @showtime,
-          total_price: seats.size * @showtime.price,
-          status: :pending # Starts as pending until payment is made
-        )
+        # 3. CanCanCan already initialized @booking, we populate its attributes safely
+        @booking.user = current_user
+        @booking.showtime = @showtime
+        @booking.total_price = seats.size * @showtime.price
+        @booking.status = :pending
+        @booking.save!
 
-        # 4. Change each seat status to 'booked' and create an individual ticket row
+        # 4. Update individual layout seats and generate associated ticket line items
         seats.each do |seat|
           seat.update!(status: :booked)
           Ticket.create!(booking: @booking, showtime_seat: seat)
         end
 
-        # 5. Success! Take them to the checkout summary page
-        redirect_to @booking, notice: "Seats reserved successfully! Please complete your payment."
-        BookingMailer.confirmation_email(@booking).deliver_now
-      
+        booking_successful = true
       else
-        # If even one seat was already taken by someone else, cancel the whole process
-        redirect_to @showtime, alert: "Sorry, one or more of those seats have just been booked by someone else. Please try again."
-        raise ActiveRecord::Rollback # Cancels the database changes made inside this block
+        # Force a database rollback if a seat was snatched by another thread
+        flash[:alert] = "Sorry, one or more of those seats have just been booked by someone else. Please try again."
+        raise ActiveRecord::Rollback
       end
+    end
+
+    # 5. REFACTOR: Trigger actions OUTSIDE the transaction block to avoid locking timeouts
+    if booking_successful
+      # Blasts through Sidekiq pipeline safely without freezing the database thread
+      BookingMailer.confirmation_email(@booking).deliver_later
+      redirect_to @booking, notice: "Seats reserved successfully! Please complete your payment."
+    else
+      redirect_to @showtime
     end
 
   rescue ActiveRecord::RecordInvalid
@@ -68,15 +70,13 @@ class BookingsController < ApplicationController
 
   # URL: GET /bookings/:id
   def show
-    # CanCanCan automatically loads the booking for us into @booking
+    # CanCanCan automatically loads the booking for us into @booking and verifies ownership!
     @tickets = @booking.tickets.includes(showtime_seat: :seat)
-    # Create a unique data string for the ticket checker
-    qr_data = "BOOKING-ID:#{@booking.id}|USER:#{@booking.user_id}|SHOWTIME:#{@booking.showtime_id}"
     
-    # Initialize the RQRCode engine
+    # Matching uniform data verification template sequence string
+    qr_data = "BOOKING-ID:#{@booking.id}|USER:#{@booking.user_id}|SHOWTIME:#{@booking.showtime_id}"
     qrcode = RQRCode::QRCode.new(qr_data)
     
-    # Render the matrix structure into a clean, lightweight SVG string
     @qr_code_svg = qrcode.as_svg(
       color: "000",
       shape_rendering: "crispEdges",

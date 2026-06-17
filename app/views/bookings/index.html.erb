@@ -1,7 +1,8 @@
 <div class="container mx-auto px-4 py-8 max-w-4xl">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-black text-gray-900 tracking-tight">
-      <%= current_user.admin? ? "Master Booking Ledger (Admin)" : "Your Ticket Wallet" %>
+      <% # 1. Check if the user has permission to manage all bookings (Admin behavior) %>
+      <%= can?(:manage, :all) ? "Master Booking Ledger (Admin)" : "Your Ticket Wallet" %>
     </h1>
     <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
       Total Records: <%= @bookings.size %>
@@ -19,7 +20,8 @@
         <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
           <tr>
             <th class="px-6 py-4">Booking ID</th>
-            <% if current_user.admin? %>
+            <% # 2. Only show the header column if the user can read bookings belonging to other users %>
+            <% if can?(:manage, Booking) %>
               <th class="px-6 py-4">Customer Email</th>
             <% end %>
             <th class="px-6 py-4">Movie</th>
@@ -33,7 +35,8 @@
           <% @bookings.each do |booking| %>
             <tr class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 font-mono text-gray-400">#<%= booking.id %></td>
-              <% if current_user.admin? %>
+              <% # 3. Securely check if user has access to read details of this specific booking asset %>
+              <% if can?(:manage, Booking) %>
                 <td class="px-6 py-4 text-indigo-600 font-semibold"><%= booking.user.email %></td>
               <% end %>
               <td class="px-6 py-4 font-bold"><%= booking.showtime.movie.title %></td>
@@ -47,7 +50,10 @@
                 </span>
               </td>
               <td class="px-6 py-4 text-right">
-                <%= link_to "View", booking_path(booking), class: "inline-block bg-gray-900 hover:bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg transition" %>
+                <% # 4. Render the Action item link button only if the current user is authorized to read it %>
+                <% if can?(:read, booking) %>
+                  <%= link_to "View", booking_path(booking), class: "inline-block bg-gray-900 hover:bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg transition" %>
+                <% end %>
               </td>
             </tr>
           <% end %>

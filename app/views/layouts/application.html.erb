@@ -24,13 +24,14 @@
   </head>
 
   <body>
-      <nav class="bg-white border-b border-gray-100 py-4 shadow-sm">
+    <nav class="bg-white border-b border-gray-100 py-4 shadow-sm">
       <div class="container mx-auto px-4 flex justify-between items-center">
         <%= link_to "🎬 CineBook", root_path, class: "text-xl font-black text-indigo-600 tracking-tight" %>
 
         <div class="flex items-center space-x-6 text-sm font-medium text-gray-600">
           <% if user_signed_in? %>
-            <%= link_to current_user.admin? ? "💼 Master Ledger" : "🎟️ My Tickets", bookings_path, class: "hover:text-indigo-600 transition font-bold text-gray-900" %>
+            <% # 1. REFACTOR: Check ability to manage Booking instead of checking current_user.admin? %>
+            <%= link_to can?(:manage, Booking) ? "💼 Master Ledger" : "🎟️ My Tickets", bookings_path, class: "hover:text-indigo-600 transition font-bold text-gray-900" %>
 
             <span class="text-gray-300">|</span>
             <span class="text-gray-500 font-normal"><%= current_user.role.capitalize %>: <%= current_user.email %></span>

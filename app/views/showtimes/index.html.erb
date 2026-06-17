@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Now Showing</h1>
     
-    <% if current_user&.admin? %>
+    <% if can?(:create, Showtime) %>
       <%= link_to 'Add New Showtime', new_showtime_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition" %>
     <% end %>
   </div>

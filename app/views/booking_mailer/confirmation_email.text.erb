@@ -1,0 +1,20 @@
+Booking Confirmed! 🎉
+
+Hi <%= @user.email %>,
+
+Your seats have been reserved successfully!
+
+Booking Details:
+- Movie: <%= @movie.title %>
+- Screen: Room <%= @showtime.screen.screen_number %>
+- Date & Time: <%= @showtime.start_time.strftime("%A, %B %d at %I:%M %p") %>
+
+----------------------------------------
+GATE ENTRY VERIFICATION CODE:
+<%= @qr_string %>
+----------------------------------------
+
+Please keep this verification sequence handy at the gate entry check desk.
+
+Enjoy your movie!
+The CineBook Team

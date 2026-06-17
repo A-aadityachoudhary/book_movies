@@ -11,7 +11,7 @@ User.delete_all
 
 # 1. Create a Test Admin and a Test Customer
 admin = User.create!(email: 'admin@gmail.com', password: 'password', role: :admin)
-customer = User.create!(email: 'customer@test.com', password: '992838', role: :customer)
+customer = User.create!(email: 'shauryashekhawat007@gmail.com', password: '992838', role: :customer)
 
 # 2. Create a Movie
 movie = Movie.create!(title: "Inception", description: "A thief steals corporate secrets through dream-sharing technology.", duration: 148, genre: "Sci-Fi")

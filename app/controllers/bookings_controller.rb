@@ -53,6 +53,7 @@ class BookingsController < ApplicationController
 
         # 5. Success! Take them to the checkout summary page
         redirect_to @booking, notice: "Seats reserved successfully! Please complete your payment."
+        BookingMailer.confirmation_email(@booking).deliver_now
       
       else
         # If even one seat was already taken by someone else, cancel the whole process

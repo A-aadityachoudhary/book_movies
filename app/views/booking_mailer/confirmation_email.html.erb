@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body { font-family: sans-serif; background-color: #f4f4f7; color: #51545e; padding: 20px; }
+      .card { background-color: #ffffff; border-radius: 16px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px #eef2f6; border: 1px solid #e8ebf0; text-align: left; }
+      h1 { color: #4f46e5; font-size: 24px; margin-top: 0; text-align: center; }
+      .ticket-details { background-color: #f8fafc; border-radius: 12px; padding: 15px; margin: 20px 0; border-left: 4px solid #4f46e5; }
+      .qr-container { text-align: center; margin: 25px 0 15px 0; padding: 15px; background: #ffffff; border: 2px dashed #e2e8f0; border-radius: 12px; display: inline-block; width: calc(100% - 34px); }
+      .qr-container svg { margin: 0 auto; display: block; max-width: 180px; }
+      .footer { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Booking Confirmed! 🎉</h1>
+      <p>Hi <%= @user.email %>,</p>
+      <p>Get the popcorn ready! Your seats have been reserved successfully. Here are your booking details:</p>
+      
+      <div class="ticket-details">
+        <p><strong>Movie:</strong> <%= @movie.title %></p>
+        <p><strong>Screen:</strong> Room <%= @showtime.screen.screen_number %></p>
+        <p><strong>Date & Time:</strong> <%= @showtime.start_time.strftime("%A, %B %d at %I:%M %p") %></p>
+        <p><strong>Total Paid:</strong> <%= number_to_currency(@booking.total_price || (@showtime.price * @booking.showtime_seats.count)) %></p>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="qr-container">
+          <p style="margin-top:0; font-size: 12px; font-weight: bold; color: #64748b; uppercase; tracking-wider; margin-bottom: 15px;">Gate Entry Scan Code</p>
+
+          <%= image_tag attachments['ticket_qr.png'].url, alt: 'Ticket QR Code', style: 'display: block; margin: 0 auto; max-width: 180px; height: auto;' %>
+
+          <p style="margin-top: 15px; margin-bottom:0; font-size: 11px; font-family: monospace; color: #94a3b8;">Booking ID: <%= @booking.id %></p>
+        </div>
+      </div>
+
+      <p>Please present this QR code at the theater entrance scanner.</p>
+      <p>Best regards,<br>The CineBook Team</p>
+    </div>
+    <div class="footer">
+      This is an automated receipt for your movie reservation.
+    </div>
+  </body>
+</html>

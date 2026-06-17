@@ -7,7 +7,7 @@ class ShowtimesController < ApplicationController
 
   # URL: /showtimes (Everyone can see this)
   def index
-    @showtimes = Showtime.where("start_time > ?", Time.current)
+    @showtimes = Showtime.where("start_time > ?", Time.current.beginning_of_day).includes(:movie, :screen).order(start_time: :asc)
   end
 
   # URL: /showtimes/:id (Everyone can see this to pick seats)
@@ -23,25 +23,54 @@ class ShowtimesController < ApplicationController
 
   # Only ADMINS can submit the form to create a showtime
   def create
-    @showtime = Showtime.new(showtime_params)
-    
-    if @showtime.save
-      # Crucial Step: When a showtime is created, automatically generate 
-      # a 'ShowtimeSeat' tracker for every single physical seat in that screen room.
-      @showtime.screen.seats.each do |seat|
+  # 1. Look up or build the movie by title directly from the raw params hash
+  # (This completely bypasses CanCanCan's initialization)
+  movie_title = params[:showtime][:movie_title]&.strip
+  @movie = Movie.find_or_create_by!(title: movie_title) do |movie|
+    movie.description = "Auto-generated description for #{movie_title}"
+    movie.duration = 120
+    movie.genre = "General"
+  end
+
+  # 2. Look up or build the screen room number
+  screen_num = params[:showtime][:screen_number]
+  main_theater = Theater.first || Theater.create!(name: "Grand Multiplex", location: "Main Block")
+  
+  @screen = Screen.find_or_create_by!(theater: main_theater, screen_number: screen_num) do |screen|
+    screen.capacity = 20 
+  end
+
+  # Sync room seats configuration 
+  if @screen.seats.blank?
+    ['A', 'B'].each do |row|
+      (1..10).each do |num|
+        Seat.create!(screen: @screen, row_name: row, seat_number: num)
+      end
+    end
+    @screen.seats.reload
+  end
+
+  # 3. Manually attach our objects to the already-initialized @showtime instance
+  @showtime.movie = @movie
+  @showtime.screen = @screen
+
+  if @showtime.save
+    ShowtimeSeat.transaction do
+      @screen.seats.each do |seat|
         ShowtimeSeat.create!(showtime: @showtime, seat: seat, status: :available)
       end
-      
-      redirect_to @showtime, notice: "Showtime successfully created!"
-    else
-      render :new, status: :unprocessable_entity
     end
-  end
 
-  private
-
-  # Strong parameters to safely allow specific data into the database
-  def showtime_params
-    params.require(:showtime).permit(:movie_id, :screen_id, :start_time, :price)
+    redirect_to @showtime, notice: "Showtime successfully published!"
+  else
+    render :new, status: :unprocessable_entity
   end
+end
+
+private
+
+# Clean up strong parameters so CanCanCan ONLY tries to assign real database columns!
+def showtime_params
+  params.require(:showtime).permit(:start_time, :price)
+end
 end

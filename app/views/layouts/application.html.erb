@@ -38,11 +38,8 @@
         <!-- NAVIGATION LINKS: Highly legible white text with soft sunset-rose interactive actions -->
         <div class="flex items-center space-x-6 text-sm font-bold tracking-tight">
           <% if user_signed_in? %>
-            <% if can?(:create, Showtime) %>
-              <%= link_to "➕ Create Showtime", new_showtime_path, class: "text-white/90 hover:text-white underline decoration-2 decoration-orange-300 transition" %>
-            <% end %>
 
-            <%= link_to can?(:manage, Booking) ? "💼 Master Ledger" : "🎟️ My Tickets", bookings_path, class: "text-white hover:text-orange-100 transition" %>
+            <%= link_to can?(:manage, Booking) ? " 🎟️ Sold Tickets" : "🎟️ My Tickets", bookings_path, class: "text-white hover:text-orange-100 transition" %>
 
             <span class="text-white/20 font-normal">|</span>
             <span class="text-white/80 font-normal"><%= current_user.role.capitalize %>: <span class="text-white font-semibold"><%= current_user.email %></span></span>

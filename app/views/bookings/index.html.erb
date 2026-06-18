@@ -70,7 +70,7 @@
                 
                 <td class="px-6 py-4 text-right">
                   <% if can?(:read, booking) %>
-                    <%= link_to "View Pass", booking_path(booking), class: "inline-block bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-xs px-4 py-2 rounded-xl transition shadow-md tracking-tight" %>
+                    <%= link_to "View", booking_path(booking), class: "inline-block bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-xs px-4 py-2 rounded-xl transition shadow-md tracking-tight" %>
                   <% end %>
                 </td>
                 

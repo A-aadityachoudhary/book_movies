@@ -11,41 +11,55 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <style>
+      body {
+        /* INJECTED: Your final vibrant pink-to-apricot linear gradient choice */
+        background-image: linear-gradient( 109deg, rgba(160,24,80,1) 11.2%, rgba(201,138,75,1) 81.7% );
+        background-attachment: fixed;
+      }
+    </style>
   </head>
 
-  <body>
-    <nav class="bg-white border-b border-gray-100 py-4 shadow-sm">
+  <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-rose-900 selection:text-white">
+    
+    <!-- NAVBAR: Kept 100% transparent while spacing elements beautifully -->
+    <nav class="bg-transparent py-6 z-50">
       <div class="container mx-auto px-4 flex justify-between items-center">
-        <%= link_to "🎬 CineBook", root_path, class: "text-xl font-black text-indigo-600 tracking-tight" %>
+        <!-- BRAND LOGO: Clean stark white typography that pops against the rich magenta background -->
+        <%= link_to "🎬 CineBook", root_path, class: "text-2xl font-black text-white tracking-tighter hover:opacity-90 transition" %>
 
-        <div class="flex items-center space-x-6 text-sm font-medium text-gray-600">
+        <!-- NAVIGATION LINKS: Highly legible white text with soft sunset-rose interactive actions -->
+        <div class="flex items-center space-x-6 text-sm font-bold tracking-tight">
           <% if user_signed_in? %>
-            <% # 1. REFACTOR: Check ability to manage Booking instead of checking current_user.admin? %>
-            <%= link_to can?(:manage, Booking) ? "💼 Master Ledger" : "🎟️ My Tickets", bookings_path, class: "hover:text-indigo-600 transition font-bold text-gray-900" %>
+            <% if can?(:create, Showtime) %>
+              <%= link_to "➕ Create Showtime", new_showtime_path, class: "text-white/90 hover:text-white underline decoration-2 decoration-orange-300 transition" %>
+            <% end %>
 
-            <span class="text-gray-300">|</span>
-            <span class="text-gray-500 font-normal"><%= current_user.role.capitalize %>: <%= current_user.email %></span>
-            <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "text-red-500 hover:text-red-600 transition font-semibold cursor-pointer" %>
+            <%= link_to can?(:manage, Booking) ? "💼 Master Ledger" : "🎟️ My Tickets", bookings_path, class: "text-white hover:text-orange-100 transition" %>
+
+            <span class="text-white/20 font-normal">|</span>
+            <span class="text-white/80 font-normal"><%= current_user.role.capitalize %>: <span class="text-white font-semibold"><%= current_user.email %></span></span>
+            <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "text-rose-200 hover:text-white transition font-bold cursor-pointer" %>
           <% else %>
-            <%= link_to "Sign In", new_user_session_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition shadow-sm" %>
-            <%= link_to "Sign Up", new_user_registration_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl transition shadow-md font-bold" %>
+            <%= link_to "Sign In", new_user_session_path, class: "text-white/90 hover:text-white transition" %>
+            <!-- PRIMARY ACTION BUTTON: Styled in solid crisp white with dark stone text to balance the bright background colors -->
+            <%= link_to "Sign Up", new_user_registration_path, class: "bg-white hover:bg-orange-50 text-stone-900 px-5 py-2.5 rounded-xl transition shadow-lg font-extrabold tracking-tight" %>
           <% end %>
         </div>
       </div>
     </nav>
     
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
+    <main class="container mx-auto mt-6 mb-12 px-5 flex-grow flex items-center justify-center">
+      <div class="w-full">
+        <%= yield %>
+      </div>
     </main>
   </body>
 </html>

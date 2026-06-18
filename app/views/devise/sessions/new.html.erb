@@ -1,43 +1,51 @@
 <div class="container mx-auto px-4 py-12 max-w-md">
-  <div class="bg-white border border-gray-200 rounded-3xl shadow-xl p-8">
+  <!-- FROSTED COMPACT SIGN-IN CARD -->
+  <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
     
-    <div class="mb-6 text-center">
-      <h1 class="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h1>
-      <p class="text-sm text-gray-500 mt-1">Sign in to your wallet to access your active ticket entry passes.</p>
+    <!-- AUTH PANEL HEADER -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-black text-white tracking-tight">Welcome Back</h1>
+      <p class="text-xs text-white/60 mt-1 font-medium">Sign in to your wallet to access your active ticket entry passes.</p>
     </div>
 
     <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-5" }) do |f| %>
       
+      <!-- EMAIL INPUT COORDINATES -->
       <div>
-        <%= f.label :email, class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+        <%= f.label :email, class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
         <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "you@example.com", required: true,
-            class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium text-gray-900" %>
+            class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
       </div>
 
+      <!-- PASSWORD FIELD INPUT & FORGOT ROUTE -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <%= f.label :password, class: "block text-xs font-bold uppercase tracking-wider text-gray-700" %>
-          <%= link_to "Forgot?", new_password_path(resource_name), class: "text-[11px] text-indigo-600 font-bold hover:underline" %>
+          <%= f.label :password, class: "block text-xs font-black uppercase tracking-wider text-orange-200/90" %>
+          <%= link_to "Forgot?", new_password_path(resource_name), class: "text-xs text-orange-200 hover:text-white underline decoration-2 decoration-orange-300/30 font-extrabold transition" %>
         </div>
         <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••", required: true,
-            class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium text-gray-900" %>
+            class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
       </div>
 
+      <!-- REMEMBER ME CHECKBOX SWITCH -->
       <% if devise_mapping.rememberable? %>
-        <div class="flex items-center">
-          <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" %>
-          <%= f.label :remember_me, class: "ml-2 text-xs font-semibold text-gray-600 select-none cursor-pointer" %>
+        <div class="flex items-center space-x-2.5 py-1">
+          <%= f.check_box :remember_me, 
+              class: "h-4 w-4 rounded border-white/10 bg-white/10 text-orange-400 focus:ring-offset-stone-900 focus:ring-orange-300 cursor-pointer transition [color-scheme:dark]" %>
+          <%= f.label :remember_me, class: "text-xs font-bold text-white/70 select-none cursor-pointer hover:text-white transition" %>
         </div>
       <% end %>
 
+      <!-- SYSTEM TRANSACTION SUBMITTER ACTION -->
       <div class="pt-2">
-        <%= f.submit "Sign In", class: "w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer text-center" %>
+        <%= f.submit "Sign In", class: "block w-full bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-sm py-3.5 rounded-xl transition shadow-lg cursor-pointer tracking-tight text-center" %>
       </div>
     <% end %>
 
-    <div class="mt-6 pt-6 border-t border-gray-100 text-center text-sm text-gray-500 font-medium">
+    <!-- NAVIGATIONAL SWITCHING LINK FOOTER -->
+    <div class="mt-8 pt-6 border-t border-white/5 text-center text-xs font-bold text-white/50 tracking-tight">
       New to CineBook? 
-      <%= link_to "Create an account", new_registration_path(resource_name), class: "text-indigo-600 font-bold hover:underline" %>
+      <%= link_to "Create an account", new_registration_path(resource_name), class: "text-white hover:text-orange-200 underline decoration-2 decoration-orange-300/50 transition pl-1 font-extrabold" %>
     </div>
 
   </div>

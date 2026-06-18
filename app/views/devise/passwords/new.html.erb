@@ -1,28 +1,39 @@
 <div class="container mx-auto px-4 py-12 max-w-md">
-  <div class="bg-white border border-gray-200 rounded-3xl shadow-xl p-8">
+  <!-- FROSTED COMPACT RECOVERY CARD -->
+  <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
     
-    <div class="mb-6 text-center">
-      <h1 class="text-2xl font-black text-gray-900 tracking-tight">Recover Password</h1>
-      <p class="text-sm text-gray-500 mt-1">Enter your registered email address and we will dispatch recovery instructions to your mailbox.</p>
+    <!-- AUTH PANEL HEADER -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-black text-white tracking-tight">Recover Password</h1>
+      <p class="text-xs text-white/60 mt-1 font-medium">Enter your registered email address and we will dispatch recovery instructions to your mailbox.</p>
     </div>
 
     <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-5" }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
+      
+      <% if resource.errors.any? %>
+        <!-- ERROR MESSAGE CONSOLE CONTAINER -->
+        <div class="p-4 bg-rose-500/20 border border-rose-500/30 rounded-2xl text-xs font-semibold text-rose-200">
+          <%= render "devise/shared/error_messages", resource: resource %>
+        </div>
+      <% end %>
 
+      <!-- EMAIL INPUT FIELD -->
       <div>
-        <%= f.label :email, class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+        <%= f.label :email, class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
         <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "you@example.com", required: true,
-            class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium text-gray-900" %>
+            class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
       </div>
 
+      <!-- SYSTEM TRANSACTION SUBMITTER ACTION -->
       <div class="pt-2">
-        <%= f.submit "Send Recovery Instructions", class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer text-center text-sm" %>
+        <%= f.submit "Send Recovery Instructions", class: "block w-full bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-sm py-3.5 rounded-xl transition shadow-lg cursor-pointer tracking-tight text-center" %>
       </div>
     <% end %>
 
-    <div class="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-500 font-semibold space-y-2 flex flex-col">
-      <%= link_to "Return to Login Form Panel", new_session_path(resource_name), class: "text-indigo-600 hover:underline" %>
-      <%= link_to "Create a New Customer Account", new_registration_path(resource_name), class: "text-indigo-600 hover:underline" %>
+    <!-- NAVIGATIONAL SWITCHING LINK FOOTER -->
+    <div class="mt-8 pt-6 border-t border-white/5 text-center text-xs font-bold text-white/50 tracking-tight space-y-3 flex flex-col">
+      <%= link_to "Return to Login Form Panel", new_session_path(resource_name), class: "text-white hover:text-orange-200 underline decoration-2 decoration-orange-300/30 transition font-extrabold" %>
+      <%= link_to "Create a New Customer Account", new_registration_path(resource_name), class: "text-white hover:text-orange-200 underline decoration-2 decoration-orange-300/30 transition font-extrabold" %>
     </div>
 
   </div>

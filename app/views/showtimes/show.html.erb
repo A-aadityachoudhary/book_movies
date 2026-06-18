@@ -1,47 +1,69 @@
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <div class="mb-8 text-center">
-    <h1 class="text-3xl font-black text-gray-900 mb-2"><%= @showtime.movie.title %></h1>
-    <p class="text-gray-600 font-medium">
-      <%= @showtime.start_time.strftime("%B %d, %Y at %I:%M %p") %> — Screen <%= @showtime.screen.screen_number %>
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+  
+  <!-- SHOWTIME HEADER TITLE CONSOLE -->
+  <div class="mb-12 text-center">
+    <h1 class="text-4xl font-black text-white tracking-tight drop-shadow-md mb-2"><%= @showtime.movie.title %></h1>
+    <p class="text-white/80 font-semibold tracking-wide text-sm">
+      🎬 <%= @showtime.start_time.strftime("%B %d, %Y at %I:%M %p") %> — Screen Room <%= @showtime.screen.screen_number %>
     </p>
   </div>
 
-  <div class="w-full h-3 bg-gray-300 rounded-b-xl shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-12 relative">
-    <span class="absolute top-4 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-widest text-gray-400">Cinema Screen This Way</span>
+  <!-- THEATRICAL CINEMA GLOWING SCREEN GRAPHIC -->
+  <div class="w-full h-2.5 bg-gradient-to-r from-orange-200 via-white to-orange-200 rounded-b-full shadow-[0_12px_30px_rgba(255,255,255,0.4)] mb-14 relative">
+    <span class="absolute top-5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-[0.3em] text-white/60">
+      STAGE / THEATER SCREEN
+    </span>
   </div>
 
   <%= form_with url: bookings_path(showtime_id: @showtime.id), method: :post, local: true do |f| %>
     
-    <div class="grid grid-cols-10 gap-3 max-w-2xl mx-auto p-6 bg-gray-50 rounded-2xl border border-gray-100 mb-8">
-      <% @showtime_seats.each do |showtime_seat| %>
-        <label class="relative block group">
-          <input type="checkbox" name="seat_ids[]" value="<%= showtime_seat.id %>" 
-                 <% # 1. Disable check toggles if seat is sold, OR if user lacks authorization to create a booking %>
-                 <%= "disabled" if !showtime_seat.available? || cannot?(:create, Booking) %> 
-                 class="sr-only peer">
-          
-          <div class="w-10 h-10 border rounded-lg flex items-center justify-center font-bold text-xs shadow-sm transition-all select-none duration-150
-            <%= showtime_seat.available? && can?(:create, Booking) ? 'bg-white border-gray-300 text-gray-700 cursor-pointer hover:border-indigo-500 peer-checked:bg-indigo-600 peer-checked:border-indigo-600 peer-checked:text-white peer-checked:scale-95' : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed' %>">
-            <%= showtime_seat.seat.row_name %><%= showtime_seat.seat.seat_number %>
-          </div>
-        </label>
-      <% end %>
+    <!-- MAIN INTERACTIVE SEATING CHART DECK -->
+    <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] shadow-2xl mb-8">
+      <div class="grid grid-cols-10 gap-3 max-w-2xl mx-auto overflow-x-auto p-1">
+        
+        <% @showtime_seats.each do |showtime_seat| %>
+          <label class="relative block group">
+            <input type="checkbox" name="seat_ids[]" value="<%= showtime_seat.id %>" 
+                   <%= "disabled" if !showtime_seat.available? || cannot?(:create, Booking) %> 
+                   class="sr-only peer">
+            
+            <!-- FLEXIBLE CHAIR BOX COMPONENT -->
+            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold text-xs shadow-md transition-all select-none duration-150
+              <%= showtime_seat.available? && can?(:create, Booking) ? 
+                  'bg-white/10 border-white/20 text-white cursor-pointer hover:border-white hover:bg-white/20 peer-checked:bg-white peer-checked:border-white peer-checked:text-stone-950 peer-checked:scale-90 shadow-black/20' : 
+                  'bg-stone-900/50 border-white/5 text-white/20 cursor-not-allowed line-through' %>">
+              <%= showtime_seat.seat.row_name %><%= showtime_seat.seat.seat_number %>
+            </div>
+          </label>
+        <% end %>
+
+      </div>
     </div>
 
-    <div class="flex justify-center space-x-6 mb-8 text-sm font-medium text-gray-600">
-      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-white border border-gray-300 rounded"></div> <span>Available</span></div>
-      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-indigo-600 rounded"></div> <span>Selected</span></div>
-      <div class="flex items-center space-x-2"><div class="w-4 h-4 bg-gray-200 rounded"></div> <span>Sold Out</span></div>
+    <!-- GRAPHIC LEGEND INDICATORS -->
+    <div class="flex flex-wrap justify-center gap-6 mb-10 text-xs font-bold tracking-wider text-white/80 uppercase">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-5 h-5 bg-white/10 border border-white/20 rounded-lg shadow-sm"></div> 
+        <span>Available</span>
+      </div>
+      <div class="flex items-center space-x-2.5">
+        <div class="w-5 h-5 bg-white rounded-lg shadow-md"></div> 
+        <span class="text-white">Selected</span>
+      </div>
+      <div class="flex items-center space-x-2.5">
+        <div class="w-5 h-5 bg-stone-900/50 border border-white/5 rounded-lg line-through flex items-center justify-center text-[8px] text-white/20">X</div> 
+        <span class="text-white/40">Sold Out</span>
+      </div>
     </div>
 
+    <!-- TRANSACTION CAPABILITY SUBMIT NODE -->
     <div class="text-center">
-      <% # 2. REFACTOR: Check if current client identity profile has clearance to trigger a ticket reservation %>
       <% if can?(:create, Booking) %>
-        <%= f.submit "Proceed to Reserve Seats", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition active:scale-98 cursor-pointer" %>
+        <%= f.submit "Proceed to Reserve Seats", class: "bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-sm px-10 py-4 rounded-xl shadow-2xl transition transform active:scale-[0.98] cursor-pointer tracking-tight" %>
       <% else %>
-        <% # Render elegant call-to-action path for unauthenticated guest session clients %>
-        <%= link_to "Sign In to Book Tickets", new_user_session_path, class: "inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition" %>
+        <%= link_to "Sign In to Book Tickets", new_user_session_path, class: "inline-block bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-sm px-10 py-4 rounded-xl shadow-2xl transition tracking-tight" %>
       <% end %>
     </div>
+    
   <% end %>
 </div>

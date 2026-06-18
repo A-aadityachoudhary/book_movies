@@ -1,18 +1,19 @@
 <div class="container mx-auto px-4 py-12 max-w-lg">
-  <% # 1. Wrap the administration template within a strong creation capability gate %>
   <% if can?(:create, Showtime) %>
-    <div class="bg-white border border-gray-200 rounded-3xl shadow-xl p-8">
+    <!-- FROSTED WIZARD CONTAINER CARD -->
+    <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
       
       <div class="mb-6">
-        <h1 class="text-2xl font-black text-gray-900">Create New Showtime</h1>
-        <p class="text-sm text-gray-500">Schedule a movie screening and initialize room seating allocations.</p>
+        <h1 class="text-2xl font-black text-white tracking-tight">Create New Showtime</h1>
+        <p class="text-xs text-white/60 mt-1 font-medium">Schedule a movie screening and initialize room seating allocations.</p>
       </div>
 
       <%= form_with model: @showtime, local: true, class: "space-y-5" do |f| %>
         
         <% if @showtime.errors.any? %>
-          <div class="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
-            <p class="font-bold mb-1">Please correct the following errors:</p>
+          <!-- ERROR PANEL -->
+          <div class="p-4 bg-rose-500/20 border border-rose-500/30 rounded-2xl text-xs font-semibold text-rose-200">
+            <p class="font-bold mb-1 text-rose-100">Please correct the following errors:</p>
             <ul class="list-disc pl-5 space-y-1">
               <% @showtime.errors.full_messages.each do |msg| %>
                 <li><%= msg %></li>
@@ -21,44 +22,46 @@
           </div>
         <% end %>
 
-        <div class="mb-5">
-          <%= f.label :movie_title, "Movie Title", class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+        <div>
+          <%= f.label :movie_title, "Movie Title", class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
           <%= f.text_field :movie_title, placeholder: "e.g., Interstellar", required: true,
-              class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium" %>
+              class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
         </div>
               
-        <div class="mb-5">
-          <%= f.label :screen_number, "Screen Room Number", class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+        <div>
+          <%= f.label :screen_number, "Screen Room Number", class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
           <%= f.number_field :screen_number, placeholder: "e.g., 5", required: true, min: 1,
-              class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium" %>
+              class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
         </div>
 
         <div>
-          <%= f.label :price, "Ticket Price ($)", class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+          <%= f.label :price, "Ticket Price ($)", class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
           <%= f.number_field :price, step: "0.01", placeholder: "12.50", 
-              class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium" %>
+              class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner" %>
         </div>
 
         <div>
-          <%= f.label :start_time, "Screening Date & Time", class: "block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2" %>
+          <%= f.label :start_time, "Screening Date & Time", class: "block text-xs font-black uppercase tracking-wider text-orange-200/90 mb-2" %>
           <%= f.datetime_local_field :start_time, 
-              class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium text-gray-700" %>
+              class: "block w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition shadow-inner [color-scheme:dark]" %>
         </div>
 
+        <!-- ACTION CONTROL BAR -->
         <div class="pt-4 flex space-x-3">
-          <%= link_to "Cancel", root_path, class: "w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-center py-3 rounded-xl transition" %>
-          <%= f.submit "Create Showtime", class: "w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer" %>
+          <%= link_to "Cancel", root_path, class: "w-1/3 bg-white/10 hover:bg-white/20 text-white font-extrabold text-center py-3 rounded-xl transition text-sm tracking-tight border border-white/5" %>
+          <%= f.submit "Create Showtime", class: "w-2/3 bg-white hover:bg-orange-50 text-stone-900 font-extrabold py-3 rounded-xl shadow-lg transition cursor-pointer text-sm tracking-tight" %>
         </div>
 
       <% end %>
 
     </div>
   <% else %>
-    <% # Graceful fallback block shown to unauthorized clients %>
-    <div class="bg-white border border-gray-200 rounded-3xl shadow-xl p-8 text-center">
-      <p class="text-red-500 font-bold text-lg mb-2">Access Denied</p>
-      <p class="text-gray-500 text-sm mb-6">You lack administrative access privileges required to initialize showtime screening inventory.</p>
-      <%= link_to "Back to Home", root_path, class: "inline-block bg-gray-900 hover:bg-gray-800 text-white font-semibold px-6 py-2.5 rounded-xl transition" %>
+    <!-- SECURITY GUARD EXCEPTION BLOCK -->
+    <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 text-center shadow-2xl">
+      <div class="text-3xl mb-3">🛡️</div>
+      <p class="text-white font-black text-xl mb-1">Access Denied</p>
+      <p class="text-white/70 text-sm mb-6">You lack administrative access privileges required to initialize showtime screening inventory.</p>
+      <%= link_to "Back to Home", root_path, class: "inline-block bg-white hover:bg-orange-50 text-stone-900 font-extrabold px-6 py-3 rounded-xl transition shadow-md text-sm" %>
     </div>
   <% end %>
 </div>

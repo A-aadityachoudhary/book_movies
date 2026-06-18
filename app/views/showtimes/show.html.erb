@@ -17,22 +17,37 @@
 
   <%= form_with url: bookings_path(showtime_id: @showtime.id), method: :post, local: true do |f| %>
     
-    <!-- MAIN INTERACTIVE SEATING CHART DECK -->
-    <div class="bg-stone-900/40 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] shadow-2xl mb-8">
+    <div id="seating-chart-deck" 
+         data-showtime-id="<%= @showtime.id %>" 
+         data-current-user-id="<%= current_user&.id %>" 
+         class="bg-stone-900/40 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] shadow-2xl mb-8">
+      
       <div class="grid grid-cols-10 gap-3 max-w-2xl mx-auto overflow-x-auto p-1">
         
         <% @showtime_seats.each do |showtime_seat| %>
+          <% seat_label = "#{showtime_seat.seat.row_name}#{showtime_seat.seat.seat_number}" %>
+          <% is_locked_by_other = showtime_seat.locked? && !showtime_seat.lock_expired? && showtime_seat.locked_by_id != current_user&.id %>
+          <% is_disabled = !showtime_seat.truly_available? %>
+
           <label class="relative block group">
-            <input type="checkbox" name="seat_ids[]" value="<%= showtime_seat.id %>" 
-                   <%= "disabled" if !showtime_seat.available? || cannot?(:create, Booking) %> 
+            <input type="checkbox" 
+                   name="seat_ids[]" 
+                   id="checkbox_<%= showtime_seat.id %>"
+                   value="<%= showtime_seat.id %>" 
+                   <%= "disabled" if is_locked_by_other || is_disabled || cannot?(:create, Booking) %> 
                    class="sr-only peer">
             
-            <!-- FLEXIBLE CHAIR BOX COMPONENT -->
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold text-xs shadow-md transition-all select-none duration-150
-              <%= showtime_seat.available? && can?(:create, Booking) ? 
-                  'bg-white/10 border-white/20 text-white cursor-pointer hover:border-white hover:bg-white/20 peer-checked:bg-white peer-checked:border-white peer-checked:text-stone-950 peer-checked:scale-90 shadow-black/20' : 
-                  'bg-stone-900/50 border-white/5 text-white/20 cursor-not-allowed line-through' %>">
-              <%= showtime_seat.seat.row_name %><%= showtime_seat.seat.seat_number %>
+            <div id="seat_wrapper_<%= showtime_seat.id %>"
+                 data-seat-label="<%= seat_label %>"
+                 class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold text-xs shadow-md transition-all select-none duration-150
+              <%= if showtime_seat.status == 'booked'
+                    'bg-stone-900/50 border-white/5 text-white/20 cursor-not-allowed line-through'
+                  elsif is_locked_by_other
+                    'bg-stone-900/50 border-white/5 text-orange-300/40 cursor-not-allowed'
+                  else
+                    'bg-white/10 border-white/20 text-white cursor-pointer hover:border-white hover:bg-white/20 peer-checked:bg-white peer-checked:border-white peer-checked:text-stone-950 peer-checked:scale-90 shadow-black/20'
+                  end %>">
+              <%= is_locked_by_other ? "🔒" : seat_label %>
             </div>
           </label>
         <% end %>
@@ -40,7 +55,6 @@
       </div>
     </div>
 
-    <!-- GRAPHIC LEGEND INDICATORS -->
     <div class="flex flex-wrap justify-center gap-6 mb-10 text-xs font-bold tracking-wider text-white/80 uppercase">
       <div class="flex items-center space-x-2.5">
         <div class="w-5 h-5 bg-white/10 border border-white/20 rounded-lg shadow-sm"></div> 
@@ -51,12 +65,15 @@
         <span class="text-white">Selected</span>
       </div>
       <div class="flex items-center space-x-2.5">
-        <div class="w-5 h-5 bg-stone-900/50 border border-white/5 rounded-lg line-through flex items-center justify-center text-[8px] text-white/20">X</div> 
+        <div class="w-5 h-5 bg-stone-900/50 border-white/5 rounded-lg flex items-center justify-center text-[10px] text-orange-300/40">🔒</div> 
+        <span class="text-orange-200/60">Held (5m Lock)</span>
+      </div>
+      <div class="flex items-center space-x-2.5">
+        <div class="w-5 h-5 bg-stone-900/50 border-white/5 rounded-lg line-through flex items-center justify-center text-[8px] text-white/20">X</div> 
         <span class="text-white/40">Sold Out</span>
       </div>
     </div>
 
-    <!-- TRANSACTION CAPABILITY SUBMIT NODE -->
     <div class="text-center">
       <% if can?(:create, Booking) %>
         <%= f.submit "Proceed to Reserve Seats", class: "bg-white hover:bg-orange-50 text-stone-900 font-extrabold text-sm px-10 py-4 rounded-xl shadow-2xl transition transform active:scale-[0.98] cursor-pointer tracking-tight" %>

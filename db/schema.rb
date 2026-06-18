@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_073407) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_18_071245) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,10 +54,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_073407) do
 
   create_table "showtime_seats", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "locked_at"
+    t.integer "locked_by_id"
     t.bigint "seat_id", null: false
     t.bigint "showtime_id", null: false
     t.integer "status"
     t.datetime "updated_at", null: false
+    t.index ["locked_by_id"], name: "index_showtime_seats_on_locked_by_id"
     t.index ["seat_id"], name: "index_showtime_seats_on_seat_id"
     t.index ["showtime_id"], name: "index_showtime_seats_on_showtime_id"
   end

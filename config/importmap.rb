@@ -1,8 +1,11 @@
-# Pin npm packages by running ./bin/importmap
+# config/importmap.rb
 
 pin "application"
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
 pin "@hotwired/stimulus", to: "stimulus.min.js"
 pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
-pin "seating_subscriber" # Maps to app/javascript/seating_subscriber.js
+pin "seating_subscriber"
+
+# CHANGE THIS LINE TO MATCH THIS EXACT PRECOMPILED FILENAME:
+pin "@rails/actioncable", to: "actioncable.esm.js"

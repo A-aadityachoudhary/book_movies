@@ -32,7 +32,7 @@ class BookingsController < ApplicationController
       seats = ShowtimeSeat.where(id: selected_seat_ids).lock("FOR UPDATE")
 
       # 2. Safety Check: Verify availability status
-      if seats.all?(&:available?)
+      if seats.all? { |s| s.available? || (s.locked? && s.locked_by_id == current_user.id) }
         
         # 3. CanCanCan already initialized @booking, we populate its attributes safely
         @booking.user = current_user

@@ -69,7 +69,7 @@ end
 
   # required extra gems!!!
 gem 'devise'
-gem 'sidekiq', '~> 6.5.8'
+gem 'sidekiq', '~> 8.1.6'
 gem 'cancancan'
 gem 'stripe' # For payments
 gem 'rqrcode' # For generating ticket QR codes

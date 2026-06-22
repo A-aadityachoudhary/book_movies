@@ -25,32 +25,38 @@
       <div class="grid grid-cols-10 gap-3 max-w-2xl mx-auto overflow-x-auto p-1">
         
         <% @showtime_seats.each do |showtime_seat| %>
-          <% seat_label = "#{showtime_seat.seat.row_name}#{showtime_seat.seat.seat_number}" %>
-          <% is_locked_by_other = showtime_seat.locked? && !showtime_seat.lock_expired? && showtime_seat.locked_by_id != current_user&.id %>
-          <% is_disabled = !showtime_seat.truly_available? %>
+  <% seat_label = "#{showtime_seat.seat.row_name}#{showtime_seat.seat.seat_number}" %>
+  <% is_locked_by_other = showtime_seat.locked? && !showtime_seat.lock_expired? && showtime_seat.locked_by_id != current_user&.id %>
+  <% is_locked_by_me    = showtime_seat.locked? && !showtime_seat.lock_expired? && showtime_seat.locked_by_id == current_user&.id %>
+  <% is_disabled = !showtime_seat.truly_available? && !is_locked_by_me %>
 
-          <label class="relative block group">
-            <input type="checkbox" 
-                   name="seat_ids[]" 
-                   id="checkbox_<%= showtime_seat.id %>"
-                   value="<%= showtime_seat.id %>" 
-                   <%= "disabled" if is_locked_by_other || is_disabled || cannot?(:create, Booking) %> 
-                   class="sr-only peer">
-            
-            <div id="seat_wrapper_<%= showtime_seat.id %>"
-                 data-seat-label="<%= seat_label %>"
-                 class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold text-xs shadow-md transition-all select-none duration-150
-              <%= if showtime_seat.status == 'booked'
-                    'bg-stone-900/50 border-white/5 text-white/20 cursor-not-allowed line-through'
-                  elsif is_locked_by_other
-                    'bg-stone-900/50 border-white/5 text-orange-300/40 cursor-not-allowed'
-                  else
-                    'bg-white/10 border-white/20 text-white cursor-pointer hover:border-white hover:bg-white/20 peer-checked:bg-white peer-checked:border-white peer-checked:text-stone-950 peer-checked:scale-90 shadow-black/20'
-                  end %>">
-              <%= is_locked_by_other ? "🔒" : seat_label %>
-            </div>
-          </label>
-        <% end %>
+  <label class="relative block group">
+    <input type="checkbox"
+           name="seat_ids[]"
+           id="checkbox_<%= showtime_seat.id %>"
+           value="<%= showtime_seat.id %>"
+           data-can-book="<%= can?(:create, Booking) %>"
+           <%= "checked" if is_locked_by_me %>
+           <%= "disabled" if is_locked_by_other || is_disabled || cannot?(:create, Booking) %>
+           class="sr-only peer">
+
+    <div id="seat_wrapper_<%= showtime_seat.id %>"
+         data-seat-label="<%= seat_label %>"
+         data-locked-at="<%= showtime_seat.locked_at&.iso8601 if showtime_seat.locked? && !showtime_seat.lock_expired? %>"
+         class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold text-xs shadow-md transition-all select-none duration-150
+      <%= if showtime_seat.status == 'booked'
+            'bg-stone-900/50 border-white/5 text-white/20 cursor-not-allowed line-through'
+          elsif is_locked_by_other
+            'bg-stone-900/50 border-white/5 text-orange-300/40 cursor-not-allowed'
+          elsif is_locked_by_me
+            'bg-white text-stone-950 border-white scale-90 shadow-black/20 cursor-pointer'
+          else
+            'bg-white/10 border-white/20 text-white cursor-pointer hover:border-white hover:bg-white/20 peer-checked:bg-white peer-checked:border-white peer-checked:text-stone-950 peer-checked:scale-90 shadow-black/20'
+          end %>">
+      <%= is_locked_by_other ? "🔒" : seat_label %>
+    </div>
+  </label>
+<% end %>
 
       </div>
     </div>

@@ -43,7 +43,8 @@ class BookingsController < ApplicationController
 
         # 4. Update individual layout seats and generate associated ticket line items
         seats.each do |seat|
-          seat.update!(status: :booked)
+          seat.update!(status: :booked, locked_by: nil, locked_at: nil)
+          seat.broadcast_status(nil)
           Ticket.create!(booking: @booking, showtime_seat: seat)
         end
 

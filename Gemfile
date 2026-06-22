@@ -74,4 +74,4 @@ gem 'cancancan'
 gem 'stripe' # For payments
 gem 'rqrcode' # For generating ticket QR codes
 gem 'chunky_png'
-gem "tailwindcss-rails", "~> 4.4"
+gem "tailwindcss-rails", "~> 4.6"
